@@ -1,0 +1,10 @@
+{
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": "\\.qml$",
+                "cmd": "sh run_qml.sh ${file}"
+            }
+        ]
+    }
+}
