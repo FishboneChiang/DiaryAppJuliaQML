@@ -1,4 +1,4 @@
-import QtQuick
+import QtQuick 
 import QtQuick.Controls
 import QtQuick.Layouts
 // import org.julialang
@@ -112,7 +112,7 @@ Window {
                 anchors.rightMargin: 10
                 anchors.topMargin: 10
                 anchors.bottomMargin: 10
-                currentIndex: 1
+                currentIndex: 0
 
                 // page 0: blank page
                 Rectangle {
@@ -235,6 +235,7 @@ Window {
                 }
 
                 // page 3: edit entries
+                
 
                 // page 4: settings
 
