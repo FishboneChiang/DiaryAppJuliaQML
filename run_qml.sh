@@ -11,7 +11,7 @@ while true; do
     if [ "$window_exists" = "true" ]; then
         break
     fi
-    sleep 0.1
+    # sleep 0.1
 done
 
 # Focus on Visual Studio Code

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+
 // import org.julialang
 
 Window {
@@ -12,17 +13,15 @@ Window {
     x: 1000
     y: 250
     color: "#222222"
-    
+
     // Define custom components
-    component CustomButton:
-    Button {
+    component CustomButton: Button {
         background: Rectangle {
             color: parent.down ? "#444444" : "#555555"
             radius: 4
         }
     }
-    component CustomTextField:
-    TextField {
+    component CustomTextField: TextField {
         background: Rectangle {
             radius: 3
             color: "#444444"
@@ -30,14 +29,14 @@ Window {
             border.width: 1
         }
     }
-    component CustomTextArea:
-    TextArea {
+    component CustomTextArea: TextArea {
         background: Rectangle {
             radius: 3
             color: "#444444"
             border.color: "#555555"
             border.width: 1
         }
+        wrapMode: TextEdit.Wrap
     }
 
     SplitView {
@@ -82,7 +81,7 @@ Window {
                     text: "New Entry"
                     Layout.fillWidth: true
                     onClicked: {
-                        stack_layout.currentIndex = 1
+                        stack_layout.currentIndex = 1;
                     }
                 }
 
@@ -131,6 +130,7 @@ Window {
                             color: "#ffffff"
                         }
                         CustomTextField {
+                            id: title_input
                             Layout.fillWidth: true
                             placeholderText: "Enter title..."
                             Layout.columnSpan: 3
@@ -140,8 +140,10 @@ Window {
                             color: "#ffffff"
                         }
                         CustomTextField {
+                            id: date_time_input
                             Layout.fillWidth: true
                             placeholderText: "YYYY-MM-DD HH:MM:SS"
+                            text: Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss")
                             validator: RegularExpressionValidator {
                                 regularExpression: /\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)/
                             }
@@ -151,11 +153,19 @@ Window {
                             color: "#ffffff"
                         }
                         CheckBox {
+                            id: current_time_checkbox
                             checked: true
+                            onToggled: {
+                                if (this.checked) {
+                                    date_time_input.text = Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss");
+                                } else {
+                                    date_time_input.text = "";
+                                }
+                            }
                         }
-
                     }
                     CustomTextArea {
+                        id: content_input
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         placeholderText: "How was your day? "
@@ -163,14 +173,19 @@ Window {
 
                     RowLayout {
                         CustomButton {
-                            Layout.preferredWidth: parent.width/2
+                            Layout.preferredWidth: parent.width / 2
                             Layout.fillWidth: true
                             text: "Save"
                         }
                         CustomButton {
-                            Layout.preferredWidth: parent.width/2
+                            Layout.preferredWidth: parent.width / 2
                             Layout.fillWidth: true
                             text: "Clear"
+                            onClicked: {
+                                title_input.text = "";
+                                date_time_input.text = current_time_checkbox.checked ? Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss") : "";
+                                content_input.text = "";
+                            }
                         }
                     }
                 }
@@ -197,7 +212,6 @@ Window {
                             Layout.fillWidth: true
                             readOnly: true
                             text: "Display date here..."
-
                         }
                     }
                     CustomTextArea {
@@ -209,12 +223,12 @@ Window {
 
                     RowLayout {
                         CustomButton {
-                            Layout.preferredWidth: parent.width/2
+                            Layout.preferredWidth: parent.width / 2
                             Layout.fillWidth: true
                             text: "Edit"
                         }
                         CustomButton {
-                            Layout.preferredWidth: parent.width/2
+                            Layout.preferredWidth: parent.width / 2
                             Layout.fillWidth: true
                             text: "Delete"
                         }
@@ -223,11 +237,9 @@ Window {
 
                 // page 3: edit entries
 
-
                 // page 4: settings
 
             }
         }
     }
-
 }
