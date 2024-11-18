@@ -9,7 +9,7 @@ import QtCore
 Window {
 
     visible: true
-    width: 800
+    width: 640
     height: 480
     title: "Diary App"
     x: 1200
@@ -31,15 +31,24 @@ Window {
             border.width: 1
         }
     }
-    component CustomTextArea: TextArea {
-        background: Rectangle {
-            radius: 3
-            color: "#444444"
-            border.color: "#555555"
-            border.width: 1
+    component CustomTextArea: ScrollView {
+        property alias content_text: text_area_id.text
+        property alias read_only: text_area_id.readOnly
+        TextArea {
+            id: text_area_id
+            readOnly: false
+            placeholderText: "How was your day?"
+            text: ""
+            background: Rectangle {
+                radius: 3
+                color: "#444444"
+                border.color: "#555555"
+                border.width: 1
+            }
+            wrapMode: TextEdit.Wrap
         }
-        wrapMode: TextEdit.Wrap
     }
+
     // component CustomEntry: Rectangle {
     //     color: "#333333"
     //     radius: 4
@@ -81,10 +90,10 @@ Window {
         anchors.topMargin: 10
         anchors.bottomMargin: 10
 
-        // LEFT SECTION
+        // LEFT AREA
         Rectangle {
 
-            SplitView.preferredWidth: (1 / 2) * parent.width
+            SplitView.preferredWidth: (2 / 5) * parent.width
             SplitView.fillHeight: true
             radius: 6
             color: "#333333"
@@ -95,6 +104,7 @@ Window {
                 anchors.rightMargin: 10
                 anchors.topMargin: 10
                 anchors.bottomMargin: 10
+                spacing: 10
 
                 RowLayout {
                     anchors.fill: parent
@@ -123,23 +133,71 @@ Window {
                     }
                 }
 
-                Column {
+                Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    Text{
-                        text: "implement list view..."
-                        color: "#ffffff"
+                    color: "#444444"
+                    radius: 4
+                    ListView {
+                        id: list
+                        anchors.fill: parent
+                        model: 20
+                        clip: true
+                        highlightMoveVelocity: -1
+                        delegate: Component {
+                            Item {
+                                width: parent.width
+                                height: 60
+                                ColumnLayout {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 10
+                                    anchors.rightMargin: 10
+                                    anchors.topMargin: 10
+                                    anchors.bottomMargin: 10
+                                    Text {
+                                        font.bold: true
+                                        font.pixelSize: 14
+                                        Layout.fillHeight: true
+                                        text: "Title: "
+                                    }
+                                    Text {
+                                        // font.pixelSize: 14
+                                        Layout.fillHeight: true
+                                        text: "Date: "
+                                    }
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        list.currentIndex = index;
+                                        stack_layout.currentIndex = 2;
+                                    }
+                                }
+                            }
+                        }
+                        highlight: Rectangle {
+                            y: list.currentItem.y
+                            color: "grey"
+                            Text {
+                                anchors.centerIn: parent
+                                text: 'index: ' + list.currentIndex
+                                color: "#ffffff"
+                            }
+                            radius: 4
+                        }
+                        focus: true
+                        onCurrentItemChanged: {
+                            console.log(list.currentIndex + " selected");
+                        }
                     }
                 }
-                
-                
             }
         }
 
-        // RIGHT SECTION
+        // RIGHT AREA
         Rectangle {
 
-            SplitView.preferredWidth: (1 / 2) * parent.width
+            SplitView.preferredWidth: (3 / 5) * parent.width
             SplitView.fillHeight: true
             radius: 6
             color: "#333333"
@@ -161,8 +219,10 @@ Window {
                 // page 1: new entry page
                 ColumnLayout {
                     anchors.fill: parent
+                    spacing: 10
                     GridLayout {
                         columns: 4
+                        rowSpacing: 10
                         Text {
                             text: "Title: "
                             color: "#ffffff"
@@ -206,7 +266,7 @@ Window {
                         id: content_input
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        placeholderText: "How was your day? "
+                        // placeholderText: "How was your day? "
                     }
 
                     RowLayout {
@@ -222,7 +282,7 @@ Window {
                             onClicked: {
                                 title_input.text = "";
                                 date_time_input.text = current_time_checkbox.checked ? Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss") : "";
-                                content_input.text = "";
+                                content_input.content_text = ""
                             }
                         }
                     }
@@ -231,8 +291,10 @@ Window {
                 // page 2: view past entries
                 ColumnLayout {
                     anchors.fill: parent
+                    spacing: 10
                     GridLayout {
                         columns: 2
+                        rowSpacing: 10
                         Text {
                             text: "Title: "
                             color: "#ffffff"
@@ -255,8 +317,8 @@ Window {
                     CustomTextArea {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        readOnly: true
-                        text: "Display content here..."
+                        read_only: true
+                        // text: "Display content here..."
                     }
 
                     RowLayout {
@@ -279,8 +341,10 @@ Window {
                 // page 3: edit entries
                 ColumnLayout {
                     anchors.fill: parent
+                    spacing: 10
                     GridLayout {
                         columns: 4
+                        rowSpacing: 10
                         Text {
                             text: "Title: "
                             color: "#ffffff"
@@ -324,7 +388,7 @@ Window {
                         id: content_edit
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        placeholderText: "How was your day? "
+                        // placeholderText: "How was your day? "
                     }
 
                     RowLayout {
@@ -347,9 +411,10 @@ Window {
                 // page 4: settings
                 ColumnLayout {
                     anchors.centerIn: parent
-                    // spacing: 20
+                    spacing: 10
                     GridLayout {
                         columns: 2
+                        rowSpacing: 10
                         Text {
                             text: "Diary Save Location: "
                             color: "#ffffff"
