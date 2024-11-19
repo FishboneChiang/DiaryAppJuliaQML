@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 import QtCore
 
-// import org.julialang
+import org.julialang
 
 Window {
 
@@ -48,6 +48,56 @@ Window {
             wrapMode: TextEdit.Wrap
         }
     }
+
+    function displayEntry() {
+        stack_layout.currentIndex = 2;
+        var index = list.currentIndex;
+        var entry = Julia.getEntry(index);
+        console.log(index, "\t", entry);
+        title_display.text = entry[0];
+        date_time_display.text = entry[1];
+        content_display.content_text = entry[2];
+    }
+
+    function clear_input() {
+        title_input.text = "";
+        date_time_input.text = current_time_checkbox.checked ? Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss") : "";
+        content_input.content_text = "";
+    }
+
+    function displayEntryEdit() {
+        stack_layout.currentIndex = 3;
+        var index = list.currentIndex;
+        var entry = Julia.getEntry(index);
+        console.log(index, "\t", entry);
+        title_edit.text = entry[0];
+        date_time_edit.text = entry[1];
+        content_edit.content_text = entry[2];
+    }
+
+    function entryInputSave() {
+        Julia.newEntry(title_input.text, date_time_input.text, content_input.content_text);
+        Julia.save_to_json();
+        stack_layout.currentIndex = 0;
+        clear_input();
+    }
+
+    function entryEditSave() {
+        var index = list.currentIndex;
+        Julia.editEntry(index, title_edit.text, date_time_edit.text, content_edit.content_text);
+        Julia.save_to_json();
+        stack_layout.currentIndex = 0;
+        list.currentIndex = -1;
+    }
+    
+    function deleteEntry(){
+        var index = list.currentIndex;
+        Julia.deleteEntry(index);
+        Julia.save_to_json();
+        stack_layout.currentIndex = 0;
+        list.currentIndex = -1;
+    }
+
 
     // component CustomEntry: Rectangle {
     //     color: "#333333"
@@ -130,6 +180,8 @@ Window {
                     Layout.fillWidth: true
                     onClicked: {
                         stack_layout.currentIndex = 1;
+                        list.currentIndex = -1;
+                        date_time_input.text = current_time_checkbox.checked ? Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss") : "";
                     }
                 }
 
@@ -141,10 +193,11 @@ Window {
                     ListView {
                         id: list
                         anchors.fill: parent
-                        model: 7
+                        model: diaryEntries
                         clip: true
                         highlightMoveVelocity: -1
                         ScrollBar.vertical: ScrollBar {}
+                        currentIndex: -1
                         delegate: Component {
                             Item {
                                 width: parent.width
@@ -159,19 +212,19 @@ Window {
                                         font.bold: true
                                         font.pixelSize: 14
                                         Layout.fillHeight: true
-                                        text: "Title: "
+                                        text: "Title: " + entryTitle
                                     }
                                     Text {
                                         // font.pixelSize: 14
                                         Layout.fillHeight: true
-                                        text: "Date: "
+                                        text: "Date: " + entryDate
                                     }
                                 }
                                 MouseArea {
                                     anchors.fill: parent
                                     onClicked: {
                                         list.currentIndex = index;
-                                        stack_layout.currentIndex = 2;
+                                        displayEntry();
                                     }
                                 }
                             }
@@ -187,9 +240,6 @@ Window {
                             radius: 4
                         }
                         focus: true
-                        onCurrentItemChanged: {
-                            console.log(list.currentIndex + " selected");
-                        }
                     }
                 }
             }
@@ -210,7 +260,7 @@ Window {
                 anchors.rightMargin: 10
                 anchors.topMargin: 10
                 anchors.bottomMargin: 10
-                currentIndex: 2
+                currentIndex: 0
 
                 // page 0: blank page
                 Rectangle {
@@ -244,7 +294,7 @@ Window {
                             placeholderText: "YYYY-MM-DD HH:MM:SS"
                             text: Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss")
                             validator: RegularExpressionValidator {
-                                regularExpression: /\d {4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)/
+                                regularExpression: /\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)/
                             }
                         }
                         Text {
@@ -275,15 +325,16 @@ Window {
                             Layout.preferredWidth: parent.width / 2
                             Layout.fillWidth: true
                             text: "Save"
+                            onClicked: {
+                                entryInputSave();
+                            }
                         }
                         CustomButton {
                             Layout.preferredWidth: parent.width / 2
                             Layout.fillWidth: true
                             text: "Clear"
                             onClicked: {
-                                title_input.text = "";
-                                date_time_input.text = current_time_checkbox.checked ? Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss") : "";
-                                content_input.content_text = ""
+                                clear_input();
                             }
                         }
                     }
@@ -301,6 +352,7 @@ Window {
                             color: "#ffffff"
                         }
                         CustomTextField {
+                            id: title_display
                             Layout.fillWidth: true
                             readOnly: true
                             text: "Display title here..."
@@ -310,12 +362,14 @@ Window {
                             color: "#ffffff"
                         }
                         CustomTextField {
+                            id: date_time_display
                             Layout.fillWidth: true
                             readOnly: true
                             text: "Display date here..."
                         }
                     }
                     CustomTextArea {
+                        id: content_display
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         read_only: true
@@ -328,13 +382,17 @@ Window {
                             Layout.fillWidth: true
                             text: "Edit"
                             onClicked: {
-                                stack_layout.currentIndex = 3;
+                                displayEntryEdit();
                             }
                         }
                         CustomButton {
                             Layout.preferredWidth: parent.width / 2
                             Layout.fillWidth: true
                             text: "Delete"
+                            onClicked:{
+                                deleteEntry();
+                                // console.log
+                            }
                         }
                     }
                 }
@@ -366,7 +424,7 @@ Window {
                             placeholderText: "YYYY-MM-DD HH:MM:SS"
                             text: Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss")
                             validator: RegularExpressionValidator {
-                                regularExpression: /\d {4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)/
+                                regularExpression: /\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)/
                             }
                         }
                         Text {
@@ -375,7 +433,7 @@ Window {
                         }
                         CheckBox {
                             id: current_time_checkbox_2
-                            checked: true
+                            checked: false
                             onToggled: {
                                 if (this.checked) {
                                     date_time_edit.text = Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss");
@@ -397,6 +455,9 @@ Window {
                             Layout.preferredWidth: parent.width / 2
                             Layout.fillWidth: true
                             text: "Save"
+                            onClicked: {
+                                entryEditSave();
+                            }
                         }
                         CustomButton {
                             Layout.preferredWidth: parent.width / 2

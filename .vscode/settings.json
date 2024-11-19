@@ -2,8 +2,12 @@
     "emeraldwalk.runonsave": {
         "commands": [
             {
-                "match": "\\.qml$",
-                "cmd": "sh run_qml.sh ${file}"
+                // "match": "\\.qml$",
+                // "cmd": "sh run_qml.sh ${file}"
+            }, 
+            {
+                "match": "main.(jl|qml)", 
+                "cmd": "sh run_julia.sh main.jl"
             }
         ]
     }
