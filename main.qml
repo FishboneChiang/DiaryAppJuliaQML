@@ -141,9 +141,10 @@ Window {
                     ListView {
                         id: list
                         anchors.fill: parent
-                        model: 20
+                        model: 7
                         clip: true
                         highlightMoveVelocity: -1
+                        ScrollBar.vertical: ScrollBar {}
                         delegate: Component {
                             Item {
                                 width: parent.width
