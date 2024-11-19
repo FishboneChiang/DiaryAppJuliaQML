@@ -1,2 +1,2 @@
 # diary_app_QML
- A simple diary app implemented with QML.jl
+ A simple diary app written in Julia and QML.
