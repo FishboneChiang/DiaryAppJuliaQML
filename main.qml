@@ -16,6 +16,8 @@ Window {
     y: 250
     color: "#222222"
 
+    property int current_id: -1
+
     // Define custom components
     component CustomButton: Button {
         background: Rectangle {
@@ -51,9 +53,8 @@ Window {
 
     function displayEntry() {
         stack_layout.currentIndex = 2;
-        var index = list.currentIndex;
-        var entry = Julia.getEntry(index);
-        console.log(index, "\t", entry);
+        var entry = Julia.getEntry(current_id);
+        console.log(current_id, "\t", entry);
         title_display.text = entry[0];
         date_time_display.text = entry[1];
         content_display.content_text = entry[2];
@@ -67,9 +68,8 @@ Window {
 
     function displayEntryEdit() {
         stack_layout.currentIndex = 3;
-        var index = list.currentIndex;
-        var entry = Julia.getEntry(index);
-        console.log(index, "\t", entry);
+        var entry = Julia.getEntry(current_id);
+        console.log(current_id, "\t", entry);
         title_edit.text = entry[0];
         date_time_edit.text = entry[1];
         content_edit.content_text = entry[2];
@@ -78,26 +78,27 @@ Window {
     function entryInputSave() {
         Julia.newEntry(title_input.text, date_time_input.text, content_input.content_text);
         Julia.save_to_json();
+        diaryList.model = Julia.getNumEntries();
         stack_layout.currentIndex = 0;
         clear_input();
     }
 
     function entryEditSave() {
-        var index = list.currentIndex;
-        Julia.editEntry(index, title_edit.text, date_time_edit.text, content_edit.content_text);
+        Julia.editEntry(current_id, title_edit.text, date_time_edit.text, content_edit.content_text);
         Julia.save_to_json();
+        diaryList.model -= 1; // to reload the diary list
+        diaryList.model = Julia.getNumEntries();
         stack_layout.currentIndex = 0;
-        list.currentIndex = -1;
-    }
-    
-    function deleteEntry(){
-        var index = list.currentIndex;
-        Julia.deleteEntry(index);
-        Julia.save_to_json();
-        stack_layout.currentIndex = 0;
-        list.currentIndex = -1;
+        current_id = -1;
     }
 
+    function deleteEntry() {
+        Julia.deleteEntry(current_id);
+        Julia.save_to_json();
+        diaryList.model = Julia.getNumEntries();
+        stack_layout.currentIndex = 0;
+        current_id = -1;
+    }
 
     // component CustomEntry: Rectangle {
     //     color: "#333333"
@@ -180,7 +181,7 @@ Window {
                     Layout.fillWidth: true
                     onClicked: {
                         stack_layout.currentIndex = 1;
-                        list.currentIndex = -1;
+                        current_id = -1;
                         date_time_input.text = current_time_checkbox.checked ? Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss") : "";
                     }
                 }
@@ -188,58 +189,38 @@ Window {
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    color: "#444444"
+                    color: "#333333"
                     radius: 4
-                    ListView {
-                        id: list
+                    ScrollView {
                         anchors.fill: parent
-                        model: diaryEntries
-                        clip: true
-                        highlightMoveVelocity: -1
-                        ScrollBar.vertical: ScrollBar {}
-                        currentIndex: -1
-                        delegate: Component {
-                            Item {
-                                width: parent.width
-                                height: 60
-                                ColumnLayout {
-                                    anchors.fill: parent
-                                    anchors.leftMargin: 10
-                                    anchors.rightMargin: 10
-                                    anchors.topMargin: 10
-                                    anchors.bottomMargin: 10
+                        Column {
+                            spacing: 2
+                            anchors.fill: parent
+                            Repeater {
+                                id: diaryList
+                                model: Julia.getNumEntries()
+                                Rectangle {
+                                    required property int index
+                                    width: parent.parent.parent.width
+                                    height: 60
+                                    color: (current_id == index) ? "#444444" : "#333333"
+                                    radius: 4
                                     Text {
-                                        font.bold: true
-                                        font.pixelSize: 14
-                                        Layout.fillHeight: true
-                                        text: "Title: " + entryTitle
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.left: parent.left
+                                        text: "Title: " + Julia.getEntry(index)[0]
+                                        color: "white"
                                     }
-                                    Text {
-                                        // font.pixelSize: 14
-                                        Layout.fillHeight: true
-                                        text: "Date: " + entryDate
-                                    }
-                                }
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        list.currentIndex = index;
-                                        displayEntry();
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            current_id = index;
+                                            displayEntry();
+                                        }
                                     }
                                 }
                             }
                         }
-                        highlight: Rectangle {
-                            y: list.currentItem.y
-                            color: "grey"
-                            Text {
-                                anchors.centerIn: parent
-                                text: 'index: ' + list.currentIndex
-                                color: "#ffffff"
-                            }
-                            radius: 4
-                        }
-                        focus: true
                     }
                 }
             }
@@ -389,7 +370,7 @@ Window {
                             Layout.preferredWidth: parent.width / 2
                             Layout.fillWidth: true
                             text: "Delete"
-                            onClicked:{
+                            onClicked: {
                                 deleteEntry();
                                 // console.log
                             }

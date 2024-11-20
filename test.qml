@@ -11,5 +11,17 @@ ApplicationWindow {
     x: 1000
     title: qsTr("Hello World")
 
-    
+    Column {
+        anchors.fill: parent
+        spacing: 2
+        Repeater {
+            model: 10
+            Rectangle {
+                width: parent.width
+                height: 40
+                radius: 4
+                color: "white"
+            }
+        }
+    }
 }
