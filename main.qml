@@ -76,17 +76,29 @@ Window {
     }
 
     function entryInputSave() {
+        if (title_input.text == "") {
+            if (content_input.content_text == "") {
+                return;
+            } else {
+                title_input.text = "Untitled";
+            }
+        }
         Julia.newEntry(title_input.text, date_time_input.text, content_input.content_text);
-        Julia.save_to_json();
         diaryList.model = Julia.getNumEntries();
         stack_layout.currentIndex = 0;
         clear_input();
     }
 
     function entryEditSave() {
+        if (title_edit.text == "") {
+            if (content_edit.content_text == "") {
+                return;
+            } else {
+                title_edit.text = "Untitled";
+            }
+        }
         Julia.editEntry(current_id, title_edit.text, date_time_edit.text, content_edit.content_text);
-        Julia.save_to_json();
-        diaryList.model -= 1; // to reload the diary list
+        diaryList.model = 0; // to reload the diary list
         diaryList.model = Julia.getNumEntries();
         stack_layout.currentIndex = 0;
         current_id = -1;
@@ -94,7 +106,6 @@ Window {
 
     function deleteEntry() {
         Julia.deleteEntry(current_id);
-        Julia.save_to_json();
         diaryList.model = Julia.getNumEntries();
         stack_layout.currentIndex = 0;
         current_id = -1;
@@ -208,7 +219,7 @@ Window {
                                     Text {
                                         anchors.verticalCenter: parent.verticalCenter
                                         anchors.left: parent.left
-                                        text: "Title: " + Julia.getEntry(index)[0]
+                                        text: Julia.getEntry(index)[0] + "\n" + Julia.getEntry(index)[1]
                                         color: "white"
                                     }
                                     MouseArea {
