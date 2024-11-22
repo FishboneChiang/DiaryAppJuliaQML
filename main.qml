@@ -111,26 +111,6 @@ Window {
         current_id = -1;
     }
 
-    // component CustomEntry: Rectangle {
-    //     color: "#333333"
-    //     radius: 4
-    //     width: parent.width
-    //     height: parent.height / 8
-    //     MouseArea {
-    //         anchors.fill: parent
-    //         onClicked: console.log("selected!")
-    //     }
-    //     property string title
-    //     property string date_time
-    //     Text {
-    //         text: title + "\n" + date_time
-    //         color: "#ffffff"
-    //         // align to the left, vertically centered
-    //         anchors.verticalCenter: parent.verticalCenter
-    //         anchors.left: parent.left
-    //     }
-    // }
-
     FolderDialog {
         id: fileDialog
         title: "Please choose a file"
