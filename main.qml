@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import QtCore
+import QtQuick.Dialogs
 
 import org.julialang
 
@@ -17,6 +18,7 @@ Window {
     color: "#222222"
 
     property int current_id: -1
+    property bool confirm_delete: false
 
     // Define custom components
     component CustomButton: Button {
@@ -196,11 +198,22 @@ Window {
                                     height: 60
                                     color: (current_id == index) ? "#444444" : "#333333"
                                     radius: 4
-                                    Text {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.left: parent.left
-                                        text: Julia.getEntry(index)[0] + "\n" + Julia.getEntry(index)[1]
-                                        color: "white"
+                                    ColumnLayout {
+                                        anchors.fill: parent
+                                        anchors.topMargin: 10
+                                        anchors.bottomMargin: 10
+                                        anchors.leftMargin: 10
+                                        anchors.rightMargin: 10
+                                        Text {
+                                            text: Julia.getEntry(index)[0]
+                                            font.pixelSize: 16
+                                            font.bold: true
+                                            color: "white"
+                                        }
+                                        Text {
+                                            text: Julia.getEntry(index)[1]
+                                            color: "white"
+                                        }
                                     }
                                     MouseArea {
                                         anchors.fill: parent
@@ -358,13 +371,24 @@ Window {
                             }
                         }
                         CustomButton {
+                            id: delete_button
                             Layout.preferredWidth: parent.width / 2
                             Layout.fillWidth: true
                             text: "Delete"
                             onClicked: {
+                                cancel_delete_button.visible = true;
                                 deleteEntry();
-                                // console.log
                             }
+                        }
+                        CustomButton {
+                            id: cancel_delete_button
+                            Layout.preferredWidth: parent.width / 2
+                            Layout.fillWidth: true
+                            text: "Cancel"
+                            onClicked: {
+                                confirm_delete = false;
+                            }
+                            visible: false
                         }
                     }
                 }

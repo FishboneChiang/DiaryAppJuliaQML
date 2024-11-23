@@ -10,10 +10,13 @@ function complete_datetime(date_string)
 		"yyyy-mm-dd HH:MM",
 		"yyyy-mm-dd",
 		"yyyy-mm",
-		"yyyy"
+		"yyyy",
 	]
 
 	# Try parsing with each format
+	if date_string == ""
+		date_string = Dates.format(Dates.now(), "yyyy-mm-dd HH:MM:SS")
+	end
 	for fmt in formats
 		try
 			dt = DateTime(date_string, fmt)
@@ -34,7 +37,7 @@ end
 
 function newEntry(title, date, content)
 	global diaryEntries
-    date = complete_datetime(date)
+	date = complete_datetime(date)
 	pushfirst!(diaryEntries, diaryEntry(title, date, content))
 	save_to_json()
 end
@@ -42,7 +45,7 @@ end
 
 function editEntry(index, title, date, content)
 	global diaryEntries
-    date = complete_datetime(date)
+	date = complete_datetime(date)
 	diaryEntries[index+1] = diaryEntry(title, date, content)
 	save_to_json()
 end
@@ -88,8 +91,8 @@ function load_from_json()
 end
 
 # default path for diary data
-diary_settings_path = homedir() * "/.diary_app_settings.json"
-diary_file_path = joinpath(@__DIR__, "diary_app_data.json")
+# diary_settings_path = homedir() * "/.diary_app_settings.json"
+diary_file_path = homedir() * "/.diary_app_data.json"
 # check if file exists
 if !isfile(diary_file_path)
 	open(diary_file_path, "w") do io
