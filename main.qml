@@ -3,12 +3,10 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import QtCore
-import QtQuick.Dialogs
 
 import org.julialang
 
 Window {
-
     visible: true
     width: 640
     height: 480
@@ -19,6 +17,53 @@ Window {
 
     property int current_id: -1
     property bool confirm_delete: false
+
+    Popup {
+        id: delete_dialog
+        parent: Overlay.overlay
+        modal: true
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        width: 300
+        height: 80
+
+        background: Rectangle {
+            color: "#333333"
+            radius: 4
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 5
+            anchors.rightMargin: 5
+            anchors.topMargin: 5
+            anchors.bottomMargin: 5
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                color: "white"
+                text: "Are you sure you want to delete this entry?"
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                CustomButton {
+                    Layout.preferredWidth: parent.width / 2
+                    Layout.fillWidth: true
+                    text: "Yes"
+                    onClicked: {
+                        deleteEntry();
+                        delete_dialog.close();
+                    }
+                }
+                CustomButton {
+                    Layout.preferredWidth: parent.width / 2
+                    Layout.fillWidth: true
+                    text: "No"
+                    onClicked: delete_dialog.close()
+                }
+            }
+        }
+    }
 
     // Define custom components
     component CustomButton: Button {
@@ -64,6 +109,7 @@ Window {
 
     function clear_input() {
         title_input.text = "";
+        current_time_checkbox.checked = true;
         date_time_input.text = current_time_checkbox.checked ? Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss") : "";
         content_input.content_text = "";
     }
@@ -75,6 +121,7 @@ Window {
         title_edit.text = entry[0];
         date_time_edit.text = entry[1];
         content_edit.content_text = entry[2];
+        current_time_checkbox_2.checked = false;
     }
 
     function entryInputSave() {
@@ -376,19 +423,8 @@ Window {
                             Layout.fillWidth: true
                             text: "Delete"
                             onClicked: {
-                                cancel_delete_button.visible = true;
-                                deleteEntry();
+                                delete_dialog.open();
                             }
-                        }
-                        CustomButton {
-                            id: cancel_delete_button
-                            Layout.preferredWidth: parent.width / 2
-                            Layout.fillWidth: true
-                            text: "Cancel"
-                            onClicked: {
-                                confirm_delete = false;
-                            }
-                            visible: false
                         }
                     }
                 }

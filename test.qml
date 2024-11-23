@@ -1,27 +1,15 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
-
-// import org.julialang
+import QtQuick.Dialogs
 
 ApplicationWindow {
     visible: true
-    width: 640
-    height: 480
-    x: 1000
-    title: qsTr("Hello World")
+    width: 320
+    height: 240
+    title: qsTr("Custom Dialog")
 
-    Column {
-        anchors.fill: parent
-        spacing: 2
-        Repeater {
-            model: 10
-            Rectangle {
-                width: parent.width
-                height: 40
-                radius: 4
-                color: "white"
-            }
-        }
+    Dialog {
+        id: customDialog
+        title: "Custom Dialog in QML/Qt 5.3"
     }
 }
