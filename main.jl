@@ -1,7 +1,4 @@
-using QML
-using JSON3
-using DataFrames
-using Dates
+using QML, JSON3, Dates
 
 function complete_datetime(date_string)
 	# Define a list of possible formats in order of complexity
