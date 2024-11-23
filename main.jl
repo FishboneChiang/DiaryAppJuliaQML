@@ -6,11 +6,8 @@ using Dates
 function complete_datetime(date_string)
 	# Define a list of possible formats in order of complexity
 	formats = [
-		"yyyy-mm-dd HH:MM:SS",
-		"yyyy-mm-dd HH:MM",
-		"yyyy-mm-dd",
-		"yyyy-mm",
-		"yyyy",
+		"yyyy-mm-dd HH:MM:SS", "yyyy-mm-dd HH:MM",
+		"yyyy-mm-dd", "yyyy-mm", "yyyy"
 	]
 
 	# Try parsing with each format
@@ -39,6 +36,7 @@ function newEntry(title, date, content)
 	global diaryEntries
 	date = complete_datetime(date)
 	pushfirst!(diaryEntries, diaryEntry(title, date, content))
+	sort_entries_by_time()
 	save_to_json()
 end
 @qmlfunction newEntry
@@ -47,6 +45,7 @@ function editEntry(index, title, date, content)
 	global diaryEntries
 	date = complete_datetime(date)
 	diaryEntries[index+1] = diaryEntry(title, date, content)
+	sort_entries_by_time()
 	save_to_json()
 end
 @qmlfunction editEntry
@@ -70,7 +69,7 @@ function getNumEntries()
 end
 @qmlfunction getNumEntries
 
-function sort_entries_with_time()
+function sort_entries_by_time()
 	global diaryEntries
 	sort!(diaryEntries, by = x -> x.entryDate, rev = true)
 end
@@ -107,11 +106,6 @@ else
 	end
 end
 diaryEntries = load_from_json()
-# diaryEntries = [
-#     diaryEntry("title"*string(i), "date", "content1...")
-#     for i in 1:5
-# ]
-# println(diaryEntries)
 
 qml_file_path = joinpath(@__DIR__, "main.qml")
 
