@@ -1,2 +1,2 @@
 using PackageCompiler
-create_sysimage(["QML", "JSON3", "Dates"], sysimage_path="packages.so")
+create_sysimage(["QML", "JSON3", "Dates", "JLD2"], sysimage_path="packages.so")

@@ -13,10 +13,11 @@ Window {
     title: "Diary App"
     x: 1200
     y: 250
-    color: "#222222"
+    color: dark_mode ? "#222222" : "#DDDDDD"
 
     property int current_id: -1
     property bool confirm_delete: false
+    property bool dark_mode: Julia.getDarkMode()
 
     Popup {
         id: delete_dialog
@@ -28,7 +29,7 @@ Window {
         height: 80
 
         background: Rectangle {
-            color: "#333333"
+            color: dark_mode ? "#333333" : "#CCCCCC"
             radius: 4
         }
 
@@ -40,7 +41,7 @@ Window {
             anchors.bottomMargin: 5
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                color: "white"
+                color: dark_mode ? "#ffffff" : "#000000"
                 text: "Are you sure you want to delete this entry?"
             }
             RowLayout {
@@ -68,17 +69,20 @@ Window {
     // Define custom components
     component CustomButton: Button {
         background: Rectangle {
-            color: parent.down ? "#444444" : "#555555"
+            color: dark_mode ? (parent.down ? "#444444" : "#555555") : (parent.down ? "#DDDDDD" : "#EEEEEE")
             radius: 4
         }
+        palette.buttonText: dark_mode ? "#ffffff" : "#000000"
     }
     component CustomTextField: TextField {
         background: Rectangle {
             radius: 3
-            color: "#444444"
-            border.color: "#555555"
+            color: dark_mode ? "#444444" : "#DDDDDD"
+            border.color: dark_mode ? "#555555" : "#EEEEEE"
             border.width: 1
         }
+        placeholderTextColor: dark_mode ? "#bbbbbb" : "#444444"
+        color: dark_mode ? "#ffffff" : "#000000"
     }
     component CustomTextArea: ScrollView {
         property alias content_text: text_area_id.text
@@ -87,11 +91,13 @@ Window {
             id: text_area_id
             readOnly: false
             placeholderText: "How was your day?"
+            placeholderTextColor: dark_mode ? "#bbbbbb" : "#444444"
             text: ""
+            color: dark_mode ? "#ffffff" : "#000000"
             background: Rectangle {
                 radius: 3
-                color: "#444444"
-                border.color: "#555555"
+                color: dark_mode ? "#444444" : "#DDDDDD"
+                border.color: dark_mode ? "#555555" : "#EEEEEE"
                 border.width: 1
             }
             wrapMode: TextEdit.Wrap
@@ -101,7 +107,6 @@ Window {
     function displayEntry() {
         stack_layout.currentIndex = 2;
         var entry = Julia.getEntry(current_id);
-        console.log(current_id, "\t", entry);
         title_display.text = entry[0];
         date_time_display.text = entry[1];
         content_display.content_text = entry[2];
@@ -117,7 +122,6 @@ Window {
     function displayEntryEdit() {
         stack_layout.currentIndex = 3;
         var entry = Julia.getEntry(current_id);
-        console.log(current_id, "\t", entry);
         title_edit.text = entry[0];
         date_time_edit.text = entry[1];
         content_edit.content_text = entry[2];
@@ -165,10 +169,14 @@ Window {
         title: "Please choose a file"
         currentFolder: StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]
         onAccepted: {
-            console.log("Accepted: " + fileDialog.selectedFolder);
+            let path = fileDialog.selectedFolder.toString().replace("file://", "");
+            save_location_display.text = path;
+            Julia.setDiaryFileDir(save_location_display.text);
+            diaryList.model = 0; // reload diary list
+            diaryList.model = Julia.getNumEntries();
         }
         onRejected: {
-            console.log("Rejected");
+            // console.log("Rejected");
         }
     }
 
@@ -187,7 +195,7 @@ Window {
             SplitView.preferredWidth: (2 / 5) * parent.width
             SplitView.fillHeight: true
             radius: 6
-            color: "#333333"
+            color: dark_mode ? "#333333" : "#CCCCCC"
 
             ColumnLayout {
                 anchors.fill: parent
@@ -203,11 +211,10 @@ Window {
                         Layout.fillWidth: true
                         text: "My Diary 📔"
                         font.pixelSize: 24
-                        color: "#ffffff"
+                        color: dark_mode ? "#ffffff" : "#000000"
                     }
                     CustomButton {
                         text: "Settings"
-                        palette.buttonText: "#ffffff"
                         Layout.fillWidth: true
                         onClicked: {
                             stack_layout.currentIndex = 4;
@@ -217,7 +224,6 @@ Window {
 
                 CustomButton {
                     text: "New Entry"
-                    palette.buttonText: "#ffffff"
                     Layout.fillWidth: true
                     onClicked: {
                         stack_layout.currentIndex = 1;
@@ -229,7 +235,7 @@ Window {
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    color: "#333333"
+                    color: dark_mode ? "#333333" : "#CCCCCC"
                     radius: 4
                     ScrollView {
                         anchors.fill: parent
@@ -243,7 +249,7 @@ Window {
                                     required property int index
                                     width: parent.parent.parent.width
                                     height: 60
-                                    color: (current_id == index) ? "#444444" : "#333333"
+                                    color: (current_id == index) ? (dark_mode ? "#444444" : "#DDDDDD") : (dark_mode ? "#333333" : "#CCCCCC")
                                     radius: 4
                                     ColumnLayout {
                                         anchors.fill: parent
@@ -255,11 +261,11 @@ Window {
                                             text: Julia.getEntry(index)[0]
                                             font.pixelSize: 16
                                             font.bold: true
-                                            color: "white"
+                                            color: dark_mode ? "#ffffff" : "#000000"
                                         }
                                         Text {
                                             text: Julia.getEntry(index)[1]
-                                            color: "white"
+                                            color: dark_mode ? "#ffffff" : "#000000"
                                         }
                                     }
                                     MouseArea {
@@ -283,7 +289,7 @@ Window {
             SplitView.preferredWidth: (3 / 5) * parent.width
             SplitView.fillHeight: true
             radius: 6
-            color: "#333333"
+            color: dark_mode ? "#333333" : "#CCCCCC"
 
             StackLayout {
                 id: stack_layout
@@ -296,7 +302,7 @@ Window {
 
                 // page 0: blank page
                 Rectangle {
-                    color: "#333333"
+                    color: dark_mode ? "#333333" : "#CCCCCC"
                 }
 
                 // page 1: new entry page
@@ -308,7 +314,7 @@ Window {
                         rowSpacing: 10
                         Text {
                             text: "Title: "
-                            color: "#ffffff"
+                            color: dark_mode ? "#ffffff" : "#000000"
                         }
                         CustomTextField {
                             id: title_input
@@ -318,7 +324,7 @@ Window {
                         }
                         Text {
                             text: "Date: "
-                            color: "#ffffff"
+                            color: dark_mode ? "#ffffff" : "#000000"
                         }
                         CustomTextField {
                             id: date_time_input
@@ -331,7 +337,7 @@ Window {
                         }
                         Text {
                             text: "Use current time: "
-                            color: "#ffffff"
+                            color: dark_mode ? "#ffffff" : "#000000"
                         }
                         CheckBox {
                             id: current_time_checkbox
@@ -381,7 +387,7 @@ Window {
                         rowSpacing: 10
                         Text {
                             text: "Title: "
-                            color: "#ffffff"
+                            color: dark_mode ? "#ffffff" : "#000000"
                         }
                         CustomTextField {
                             id: title_display
@@ -391,7 +397,7 @@ Window {
                         }
                         Text {
                             text: "Date: "
-                            color: "#ffffff"
+                            color: dark_mode ? "#ffffff" : "#000000"
                         }
                         CustomTextField {
                             id: date_time_display
@@ -438,7 +444,7 @@ Window {
                         rowSpacing: 10
                         Text {
                             text: "Title: "
-                            color: "#ffffff"
+                            color: dark_mode ? "#ffffff" : "#000000"
                         }
                         CustomTextField {
                             id: title_edit
@@ -448,7 +454,7 @@ Window {
                         }
                         Text {
                             text: "Date: "
-                            color: "#ffffff"
+                            color: dark_mode ? "#ffffff" : "#000000"
                         }
                         CustomTextField {
                             id: date_time_edit
@@ -461,7 +467,7 @@ Window {
                         }
                         Text {
                             text: "Use current time: "
-                            color: "#ffffff"
+                            color: dark_mode ? "#ffffff" : "#000000"
                         }
                         CheckBox {
                             id: current_time_checkbox_2
@@ -505,25 +511,48 @@ Window {
                 // page 4: settings
                 ColumnLayout {
                     anchors.centerIn: parent
-                    spacing: 10
+                    spacing: 20
                     GridLayout {
                         columns: 2
                         rowSpacing: 10
                         Text {
                             text: "Diary Save Location: "
-                            color: "#ffffff"
+                            color: dark_mode ? "#ffffff" : "#000000"
                             Layout.columnSpan: 2
                         }
                         CustomTextField {
+                            id: save_location_display
                             Layout.fillWidth: true
                             readOnly: true
-                            text: "Display save location here..."
+                            text: Julia.getDiaryFileDir()
                         }
                         CustomButton {
                             text: "File Browser"
                             onClicked: {
                                 fileDialog.visible = true;
                             }
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 2
+                        Text {
+                            text: "Color Scheme:   "
+                            color: dark_mode ? "#ffffff" : "#000000"
+                        }
+                        Text {
+                            text: "☀️"
+                        }
+                        Switch {
+                            checked: dark_mode
+                            onToggled: {
+                                dark_mode = !(dark_mode);
+                                Julia.setDarkMode(dark_mode);
+                            }
+                        }
+                        Text {
+                            text: "🌙"
                         }
                     }
                 }

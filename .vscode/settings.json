@@ -3,11 +3,11 @@
         "commands": [
             {
                 // "match": "\\.qml$",
-                // "cmd": "sh run_qml.sh ${file}"
+                // "cmd": "sh run_qml.sh ${file} 2>/dev/null"
             }, 
             {
                 "match": "main.(jl|qml)", 
-                "cmd": "sh run_julia.sh main.jl"
+                "cmd": "sh run_julia.sh main.jl 2>/dev/null"
             }
         ]
     }
