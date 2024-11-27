@@ -154,6 +154,7 @@ end
 
 # initialize file to save diary app data
 diary_file_path = joinpath(settings["diary_file_dir"], "diary_app_data.json")
+diaryEntries = load_from_json()
 initializeDiary()
 
 # display diary app information
