@@ -32,7 +32,6 @@ function main()
 	end
 
 	function newEntry(title, date, content)
-		# global diaryEntries
 		# complete date & time
 		date = complete_datetime(date)
 		# append new entry to the list and sort entries by time (can be optimized)
@@ -44,7 +43,6 @@ function main()
 	@qmlfunction newEntry
 
 	function editEntry(index, title, date, content)
-		# global diaryEntries
 		# complete date & time
 		date = complete_datetime(date)
 		# append entry to the list and sort entries by time (can be optimized)
@@ -56,64 +54,54 @@ function main()
 	@qmlfunction editEntry
 
 	function deleteEntry(index)
-		# global diaryEntries
 		deleteat!(diaryEntries, index + 1)
 		save_to_json()
 	end
 	@qmlfunction deleteEntry
 
 	function getEntry(index)
-		# global diaryEntries
 		return [diaryEntries[index+1].entryTitle, diaryEntries[index+1].entryDate, diaryEntries[index+1].entryContent]
 	end
 	@qmlfunction getEntry
 
 	function getNumEntries()
-		# global diaryEntries
 		return length(diaryEntries)
 	end
 	@qmlfunction getNumEntries
 
 	function sort_entries_by_time()
-		# global diaryEntries
 		sort!(diaryEntries, by = x -> x.entryDate, rev = true)
 	end
 
 	function save_to_json()
-		# global diaryEntries, diary_file_path
 		open(diary_file_path, "w") do io
 			JSON3.write(io, diaryEntries)
 		end
 	end
 
 	function load_from_json()
-		# global diary_file_path
 		open(diary_file_path, "r") do io
 			JSON3.read(io, Vector{diaryEntry})
 		end
 	end
 
 	function setDarkMode(dark_mode)
-		# global settings, diary_settings_path
 		settings["dark_mode"] = dark_mode
 		save(diary_settings_path, settings)
 	end
 	@qmlfunction setDarkMode
 
 	function getDarkMode()
-		# global settings
 		return settings["dark_mode"]
 	end
 	@qmlfunction getDarkMode
 
 	function getDiaryFileDir()
-		# global settings
 		return settings["diary_file_dir"]
 	end
 	@qmlfunction getDiaryFileDir
 
 	function setDiaryFileDir(path)
-		# global settings, diary_settings_path
 		# convert path to Julia string
 		save_path::String = string(path)
 		println("New diary save location: ", save_path)
@@ -126,9 +114,6 @@ function main()
 	@qmlfunction setDiaryFileDir
 
 	function initializeDiary()
-		# global diaryEntries
-		# global diary_file_path
-		# global settings
 		# initialize file to save diary app data
 		diary_file_path = joinpath(settings["diary_file_dir"], "diary_app_data.json")
 		# check if the file exists or is empty
@@ -179,6 +164,5 @@ function main()
 	exec()
 
 end
-
 
 end # module MyApp
