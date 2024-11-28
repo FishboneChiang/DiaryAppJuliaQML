@@ -1,3 +1,0 @@
-using MyApp
-
-MyApp.main()
