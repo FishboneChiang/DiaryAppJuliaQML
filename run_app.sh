@@ -1,1 +1,0 @@
-julia --sysimage=packages.so main.jl

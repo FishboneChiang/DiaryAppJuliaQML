@@ -1,5 +1,5 @@
 using Pkg
-Pkg.activate("MyApp")
-using MyApp
+Pkg.activate("DiaryApp")
+using DiaryApp
 
-MyApp.main()
+DiaryApp.main()
