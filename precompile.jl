@@ -1,6 +1,6 @@
 using PackageCompiler
 using Pkg
 
-Pkg.activate("MyApp")
+Pkg.activate("DiaryApp")
 
-create_sysimage(["MyApp"], sysimage_path="packages.so")
+create_sysimage(["DiaryApp"], sysimage_path="packages.so")
